@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .container {
+      margin: 0 auto;
+      width: 500px;
+      height: 500px;
+      border: 1px solid #000;
+    }
+
+    .company {
+      color: #fff;
+      background-color: rgb(0, 0, 150);
+    }
+
+    .child-one {
+      background-color: rgb(47, 58, 160);
+      border: 1px solid #000;
+    }
+
+    .child-two {
+      display: flex;
+      background-color: rgb(86, 94, 163);
+      border: 1px solid #000;
+    }
+
+    .child-three {
+      background-color: rgb(122, 126, 160);
+      border: 1px solid #000;
+    }
+
+
+    .hide {
+      display: none;
+    }
+
+    .active {
+      background-color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <div class="container">
+    <ul @click="handleClick($event)">
+      <li class="company" v-for="(item, idx) in list">
+        <!-- 公司 -->
+        <p :data-name="item.name">{{item.name}}</p>
+        <ul :class="{hide: !item.selected}">
+          <!-- 子公司 -->
+          <li class="child-one" v-for="childOne in item.children">
+            <p>{{childOne.name}}</p>
+            <ul>
+              <!-- 矿 -->
+              <li class="child-two" v-for="childTwo in childOne.children">
+                <p :class="{active: childTwo.selected}" :data-name="childTwo.name">{{childTwo.name}}</p>
+                <ul>
+                  <!-- 工作面 -->
+                  <li class="child-three" :class="{active: childThree.selected}"
+                    v-for="childThree in childTwo.children">
+                    <span :data-name="childThree.name">{{childThree.name}}</span>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <script src="./index.js"></script>
+  <script>
+    /**
+  * 递归给每个包含children字段的对象，新增一个selected字段，用于判断选中效果
+  * data为接口请求的数组，这里用的模拟数据
+  */
+    function format(data) {
+      if (data instanceof Array) {
+        data.map((obj, idx) => {
+          obj['selected'] = idx == 0 ? true : false
+          if (obj.hasOwnProperty('children') && obj['children'] instanceof Array) {
+            format(obj.children)
+          }
+        })
+      }
+      return data
+    }
+
+    let newData = format(db)  //这里的db来自于64行引入的数据
+    console.log('格式后数据', newData)
+
+
+
+    new Vue({
+      el: '.container',
+      data: {
+        list: newData
+      },
+      methods: {
+        setActive(data, selectedName) {
+          if (data instanceof Array) {
+            data.map((obj, idx) => {
+              if (obj['name'] == selectedName) {
+                obj['selected'] = true
+              } else if (obj.hasOwnProperty('children') && obj['children'] instanceof Array) {
+                this.setActive(obj.children)
+              }
+            })
+          }
+          return data
+        },
+        handleClick(evt) {
+          if (evt.target.dataset.hasOwnProperty('name')) {
+            let selectedName = evt.target.dataset.name;
+            this.list = this.setActive(this.list, selectedName)
+          }
+          console.log(this.list)
+          console.log(evt.target.dataset.name)
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
