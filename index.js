@@ -149,18 +149,12 @@ let db = [
       }
     ]
   },
-  //公司对象
   {
     name: '2号公司',
-    children: [
-      //子公司对象
-      {
+    children: [{
         name: '2-1子公司',
-        children: [
-          //子公司旗下每个矿对象
-          {
+        children: [{
             name: '2-1-1矿',
-            //子公司旗下每个矿旗下每个工作面对象
             children: [{
                 name: '2-1-1-1工作面'
               },
@@ -299,18 +293,12 @@ let db = [
       }
     ]
   },
-  //公司对象
   {
     name: '3号公司',
-    children: [
-      //子公司对象
-      {
+    children: [{
         name: '3-1子公司',
-        children: [
-          //子公司旗下每个矿对象
-          {
+        children: [{
             name: '3-1-1矿',
-            //子公司旗下每个矿旗下每个工作面对象
             children: [{
                 name: '3-1-1-1工作面'
               },

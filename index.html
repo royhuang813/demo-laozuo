@@ -4,50 +4,133 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>demo</title>
   <style>
     * {
       padding: 0;
       margin: 0;
       list-style: none;
+      box-sizing: border-box;
     }
 
     .container {
       margin: 0 auto;
       width: 500px;
-      height: 500px;
       border: 1px solid #000;
     }
 
-    .company {
+    .company-text {
+      padding: 10px 20px;
       color: #fff;
-      background-color: rgb(0, 0, 150);
+      background-color: #1d2f3d;
+      cursor: pointer;
+    }
+
+    .company-group {
+      display: flex;
+      flex-direction: column;
+      height: 60vh;
+      color: #fff;
+      background-color: #232731;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .company-group-hide {
+      height: 0;
     }
 
     .child-one {
-      background-color: rgb(47, 58, 160);
-      border: 1px solid #000;
+      position: relative;
+    }
+
+    .child-one::before {
+      content: '';
+      z-index: 9999;
+      position: absolute;
+      top: 20px;
+      left: 14px;
+      display: block;
+      width: 16px;
+      height: 16px;
+      background-color: #3b66c5;
+      border-radius: 50%;
+    }
+
+    .child-one::after {
+      content: '';
+      position: absolute;
+      top: 30px;
+      left: 20px;
+      display: block;
+      width: 4px;
+      height: 100%;
+      border-left: 4px dashed #3b66c5;
+    }
+
+    .child-one-text {
+      padding: 20px 0 0 40px;
+      color: #3b66c5;
+    }
+
+    .child-one-group {
+      position: relative;
+      left: 60px;
+      margin: 30px 0;
     }
 
     .child-two {
       display: flex;
-      background-color: rgb(86, 94, 163);
-      border: 1px solid #000;
     }
 
-    .child-three {
-      background-color: rgb(122, 126, 160);
-      border: 1px solid #000;
+    .child-two-text {
+      display: inline;
+      padding: 20px 20px;
+      width: 120px;
+      text-align: center;
+      background-color: #1c2833;
+      cursor: pointer;
     }
 
+    .child-three-text-active {
+      padding: 20px 20px;
+      color: #3b66c5;
+      background-color: #1a2e2c;
+      border-left: 4px solid #1e78e7;
+    }
 
-    .hide {
+    .child-two-group {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 130px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+      width: 300px;
+      background-color: #1d242d;
+    }
+
+    .child-two-group-hide {
       display: none;
     }
 
-    .active {
-      background-color: red;
+    .child-three {
+      padding: 10px 4px;
+      width: 44%;
+      text-align: center;
+      background-color: #194e8d;
+      border-radius: 8px;
+      cursor: pointer;
     }
+
+    .child-three-active {
+      transition: all 0.3s;
+      background-color: #3076f4;
+    }
+
+    .child-three-text {}
   </style>
 </head>
 
@@ -55,22 +138,21 @@
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <div class="container">
     <ul @click="handleClick($event)">
-      <li class="company" v-for="(item, idx) in list">
+      <li v-for="(item, idx) in list">
         <!-- 公司 -->
-        <p :data-name="item.name">{{item.name}}</p>
-        <ul :class="{hide: !item.selected}">
+        <p class="company-text" :data-name="item.name">{{item.name}}</p>
+        <ul class="company-group" :class="{'company-group-hide': !item.selected}">
           <!-- 子公司 -->
           <li class="child-one" v-for="childOne in item.children">
-            <p>{{childOne.name}}</p>
-            <ul>
+            <p class="child-one-text">{{childOne.name}}</p>
+            <ul class="child-one-group">
               <!-- 矿 -->
               <li class="child-two" v-for="childTwo in childOne.children">
-                <p :class="{active: childTwo.selected}" :data-name="childTwo.name">{{childTwo.name}}</p>
-                <ul>
+                <p class="child-two-text" :class="{'child-three-text-active': childTwo.selected}" :data-name="childTwo.name">{{childTwo.name}}</p>
+                <ul class="child-two-group" :class="{'child-two-group-hide': !childTwo.selected}">
                   <!-- 工作面 -->
-                  <li class="child-three" :class="{active: childThree.selected}"
-                    v-for="childThree in childTwo.children">
-                    <span :data-name="childThree.name">{{childThree.name}}</span>
+                  <li class="child-three" :class="{'child-three-active': childThree.selected}" v-for="childThree in childTwo.children">
+                    <p class="child-three-text" :data-name="childThree.name">{{childThree.name}}</p>
                   </li>
                 </ul>
               </li>
@@ -83,9 +165,9 @@
   <script src="./index.js"></script>
   <script>
     /**
-  * 递归给每个包含children字段的对象，新增一个selected字段，用于判断选中效果
-  * data为接口请求的数组，这里用的模拟数据
-  */
+     * 递归给每个包含children字段的对象，新增一个selected字段，用于判断选中效果
+     * data为接口请求的数组，这里用的模拟数据
+     */
     function format(data) {
       if (data instanceof Array) {
         data.map((obj, idx) => {
@@ -98,10 +180,10 @@
       return data
     }
 
-    let newData = format(db)  //这里的db来自于64行引入的数据
+    let tempData = JSON.parse(JSON.stringify(db))
+    let newData = format(tempData) //这里的db来自于82行引入的数据
+    console.log('原始数据', db)
     console.log('格式后数据', newData)
-
-
 
     new Vue({
       el: '.container',
@@ -109,24 +191,27 @@
         list: newData
       },
       methods: {
+        //匹配相同name字段，并将其所在对象中的selected字段设置为true，同级目录下其余的则是false
         setActive(data, selectedName) {
           if (data instanceof Array) {
-            data.map((obj, idx) => {
+            data.map((obj, idx, arr) => {
               if (obj['name'] == selectedName) {
-                obj['selected'] = true
+                arr.map((obj2, idx2) => {
+                  obj2['selected'] = idx != idx2 ? false : true
+                })
+                return false;
               } else if (obj.hasOwnProperty('children') && obj['children'] instanceof Array) {
-                this.setActive(obj.children)
+                this.setActive(obj.children, selectedName)
               }
             })
           }
-          return data
         },
+        //事件委托
         handleClick(evt) {
           if (evt.target.dataset.hasOwnProperty('name')) {
             let selectedName = evt.target.dataset.name;
-            this.list = this.setActive(this.list, selectedName)
+            this.setActive(this.list, selectedName)
           }
-          console.log(this.list)
           console.log(evt.target.dataset.name)
         }
       }
